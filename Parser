@@ -1,0 +1,216 @@
+class MovieList {
+public:
+    Movie *thisMovieObject;
+    ActorList *actorList;
+    DirectorList *directorList;
+
+    string filePath;
+    string oneLine;
+    string movieTitle;
+    string genres;
+    int titleYear;
+    float imdbScore;
+    string directorName;
+    int directorFacebookLikes;
+    int criticsForReview;
+    int duration;
+    string actor1Name;
+    int actor1FacebookLikes;
+    string actor2Name;
+    int actor2FacebookLikes;
+    string actor3Name;
+    int actor3FacebookLikes;
+    long long gross;
+    int votedUsers;
+    int castTotalFacebookLikes;
+    int facesInPoster;
+    string plotKeywords;
+    string movieImdbLink;
+    int numUsersForReviews;
+    string language;
+    string country;
+    string contentRating;
+    long long budget;
+    float aspectRatio;
+    int movieFacebookLikes;
+    string color;
+
+    // Maintaining two movie lists, sorted by year and rating
+    Node<Movie> *pStartOfSortedByYear = nullptr;
+    Node<Movie> *pLastOfSortedByYear = nullptr;
+    Node<Movie> *pStartOfSortedByRating = nullptr;
+    Node<Movie> *pLastOfSortedByRating = nullptr;
+    Node<Movie> *pCurrentNode = nullptr;
+    Node<Movie> *pCurrentNodePrev = nullptr;
+
+    MovieList(string filePath) {
+        this->filePath = filePath;
+        ifstream movieFile(this->filePath);
+        string temp; // To store the string values which are converted to the correct datatype later
+
+        actorList = new ActorList();
+        directorList = new DirectorList();
+
+        if (!movieFile.is_open())
+            cout << "File failed to open.";
+
+        bool title_line = true;
+        while (getline(movieFile, oneLine)) {
+            if (!title_line) {
+                stringstream current_line(oneLine);
+
+                getline(current_line, movieTitle, '/');
+
+                getline(current_line, temp, ','); // Skip the next comma
+
+                getline(current_line, genres, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    titleYear = -1;
+                } else {
+                    titleYear = stoi(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    imdbScore = -1;
+                } else {
+                    imdbScore = stof(temp);
+                }
+
+                getline(current_line, directorName, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    directorFacebookLikes = -1;
+                } else {
+                    directorFacebookLikes = stoi(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    criticsForReview = -1;
+                } else {
+                    criticsForReview = stoi(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    duration = -1;
+                } else {
+                    duration = stoi(temp);
+                }
+
+                getline(current_line, actor1Name, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    actor1FacebookLikes = -1;
+                } else {
+                    actor1FacebookLikes = stoi(temp);
+                }
+
+                getline(current_line, actor2Name, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    actor2FacebookLikes = -1;
+                } else {
+                    actor2FacebookLikes = stoi(temp);
+                }
+
+                getline(current_line, actor3Name, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    actor3FacebookLikes = -1;
+                } else {
+                    actor3FacebookLikes = stoi(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    gross = -1;
+                } else {
+                    gross = stoll(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    votedUsers = -1;
+                } else {
+                    votedUsers = stoi(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    castTotalFacebookLikes = -1;
+                } else {
+                    castTotalFacebookLikes = stoi(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    facesInPoster = -1;
+                } else {
+                    facesInPoster = stoi(temp);
+                }
+
+                getline(current_line, plotKeywords, ',');
+
+                getline(current_line, movieImdbLink, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    numUsersForReviews = -1;
+                } else {
+                    numUsersForReviews = stoi(temp);
+                }
+
+                getline(current_line, language, ',');
+
+                getline(current_line, country, ',');
+
+                getline(current_line, contentRating, ',');
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    budget = -1;
+                } else {
+                    budget = stoll(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    aspectRatio = -1;
+                } else {
+                    aspectRatio = stof(temp);
+                }
+
+                getline(current_line, temp, ',');
+                if (temp.empty()) {
+                    movieFacebookLikes = -1;
+                } else {
+                    movieFacebookLikes = stoi(temp);
+                }
+
+                getline(current_line, color, ',');
+
+                thisMovieObject = new Movie(movieTitle, genres, titleYear, imdbScore, directorName,
+                                            directorFacebookLikes,
+                                            criticsForReview, duration, actor1Name, actor1FacebookLikes,
+                                            actor2Name, actor2FacebookLikes,
+                                            actor3Name, actor3FacebookLikes, gross, votedUsers,
+                                            castTotalFacebookLikes,
+                                            facesInPoster, plotKeywords, movieImdbLink, numUsersForReviews,
+                                            language,
+                                            country, contentRating, budget, aspectRatio, movieFacebookLikes,
+                                            color);
+            } else { // Get rid of the 1st row because it only has headings. The cursor moves to the second row after the pNext line is executed.
+                stringstream titles(oneLine);
+                title_line = false;
+            }
+        }
+        movieFile.close(); // **Good programming practice**
+    }
